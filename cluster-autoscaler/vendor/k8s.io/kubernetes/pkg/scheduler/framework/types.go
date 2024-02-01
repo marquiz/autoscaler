@@ -33,6 +33,7 @@ import (
 	"k8s.io/klog/v2"
 
 	podutil "k8s.io/kubernetes/pkg/api/v1/pod"
+	"k8s.io/kubernetes/pkg/api/v1/resource"
 	resourcehelper "k8s.io/kubernetes/pkg/api/v1/resource"
 	"k8s.io/kubernetes/pkg/features"
 	schedutil "k8s.io/kubernetes/pkg/scheduler/util"
@@ -65,6 +66,12 @@ type GVK string
 
 // Constants for GVKs.
 const (
+	// There are a couple of notes about how the scheduler notifies the events of Pods:
+	// - Add: add events could be triggered by either a newly created Pod or an existing Pod that is scheduled to a Node.
+	// - Delete: delete events could be triggered by:
+	//           - a Pod that is deleted
+	//           - a Pod that was assumed, but gets un-assumed due to some errors in the binding cycle.
+	//           - an existing Pod that was unscheduled but gets scheduled to a Node.
 	Pod                   GVK = "Pod"
 	Node                  GVK = "Node"
 	PersistentVolume      GVK = "PersistentVolume"
@@ -279,8 +286,14 @@ type WeightedAffinityTerm struct {
 	Weight int32
 }
 
+// ExtenderName is a fake plugin name put in UnschedulablePlugins when Extender rejected some Nodes.
+const ExtenderName = "Extender"
+
 // Diagnosis records the details to diagnose a scheduling failure.
 type Diagnosis struct {
+	// NodeToStatusMap records the status of each node
+	// if they're rejected in PreFilter (via PreFilterResult) or Filter plugins.
+	// Nodes that pass PreFilter/Filter plugins are not included in this map.
 	NodeToStatusMap NodeToStatusMap
 	// UnschedulablePlugins are plugins that returns Unschedulable or UnschedulableAndUnresolvable.
 	UnschedulablePlugins sets.Set[string]
@@ -549,12 +562,23 @@ type Resource struct {
 	AllowedPodNumber int
 	// ScalarResources
 	ScalarResources map[v1.ResourceName]int64
+	// PodQOSResources holds the total amount of pod-level QoS resources.
+	PodQOSResources resource.QOSResourcesTotal
+	// ContainerQOSResources holds the total amount of container-level QoS resources.
+	ContainerQOSResources resource.QOSResourcesTotal
 }
 
-// NewResource creates a Resource from ResourceList
-func NewResource(rl v1.ResourceList) *Resource {
+type QOSResources map[v1.QOSResourceName]QOSResourceClasses
+
+// QOSResourceClasses stores a set of classes (of one type of QoS-class
+// resource) plus their capacities. Nil pointer implies infinite capacity.
+type QOSResourceClasses map[string]*int64
+
+// NewResource creates a Resource
+func NewResource(rl v1.ResourceList, qrl v1.QOSResourceStatus) *Resource {
 	r := &Resource{}
 	r.Add(rl)
+	r.SetQOSResources(qrl)
 	return r
 }
 
@@ -582,6 +606,28 @@ func (r *Resource) Add(rl v1.ResourceList) {
 	}
 }
 
+func (r *Resource) SetQOSResources(qrl v1.QOSResourceStatus) {
+	if r == nil {
+		return
+	}
+
+	// Conversion func from node status into our internal representation
+	convert := func(in []v1.QOSResourceInfo) resourcehelper.QOSResourcesTotal {
+		out := make(resourcehelper.QOSResourcesTotal, len(in))
+		for _, qr := range in {
+			classes := make(resourcehelper.QOSResourceTotal, len(qr.Classes))
+			for _, c := range qr.Classes {
+				classes[c.Name] = c.Capacity
+			}
+			out[qr.Name] = classes
+		}
+		return out
+	}
+
+	r.PodQOSResources = convert(qrl.PodQOSResources)
+	r.ContainerQOSResources = convert(qrl.ContainerQOSResources)
+}
+
 // Clone returns a copy of this resource.
 func (r *Resource) Clone() *Resource {
 	res := &Resource{
@@ -596,6 +642,10 @@ func (r *Resource) Clone() *Resource {
 			res.ScalarResources[k] = v
 		}
 	}
+
+	res.PodQOSResources = *r.PodQOSResources.Clone()
+	res.ContainerQOSResources = *r.ContainerQOSResources.Clone()
+
 	return res
 }
 
@@ -808,18 +858,15 @@ func (n *NodeInfo) update(pod *v1.Pod, sign int64) {
 	n.NonZeroRequested.MilliCPU += sign * non0CPU
 	n.NonZeroRequested.Memory += sign * non0Mem
 
+	// Handle QoS resources
+	n.Requested.PodQOSResources.Sum(&res.PodQOSResources, sign > 0)
+	n.Requested.ContainerQOSResources.Sum(&res.ContainerQOSResources, sign > 0)
+
 	// Consume ports when pod added or release ports when pod removed.
 	n.updateUsedPorts(pod, sign > 0)
 	n.updatePVCRefCounts(pod, sign > 0)
 
 	n.Generation = nextGeneration()
-}
-
-func max(a, b int64) int64 {
-	if a >= b {
-		return a
-	}
-	return b
 }
 
 func calculateResource(pod *v1.Pod) (Resource, int64, int64) {
@@ -856,6 +903,9 @@ func calculateResource(pod *v1.Pod) (Resource, int64, int64) {
 	}
 	var res Resource
 	res.Add(requests)
+
+	res.PodQOSResources, res.ContainerQOSResources = resourcehelper.PodQOSResourceRequests(pod)
+
 	return res, non0CPU, non0Mem
 }
 
@@ -894,7 +944,7 @@ func (n *NodeInfo) updatePVCRefCounts(pod *v1.Pod, add bool) {
 // SetNode sets the overall node information.
 func (n *NodeInfo) SetNode(node *v1.Node) {
 	n.node = node
-	n.Allocatable = NewResource(node.Status.Allocatable)
+	n.Allocatable = NewResource(node.Status.Allocatable, node.Status.QOSResources)
 	n.Generation = nextGeneration()
 }
 

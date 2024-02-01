@@ -1759,6 +1759,29 @@ type ServiceAccountTokenProjection struct {
 	Path string
 }
 
+// ClusterTrustBundleProjection allows a pod to access the
+// `.spec.trustBundle` field of a ClusterTrustBundle object in an auto-updating
+// file.
+type ClusterTrustBundleProjection struct {
+	// Select a single ClusterTrustBundle by object name.   Mutually-exclusive
+	// with SignerName and LabelSelector.
+	Name *string
+
+	// Select all ClusterTrustBundles for this signer that match LabelSelector.
+	// Mutually-exclusive with Name.
+	SignerName *string
+
+	// Select all ClusterTrustBundles that match this LabelSelecotr.
+	// Mutually-exclusive with Name.
+	LabelSelector *metav1.LabelSelector
+
+	// Block pod startup if the selected ClusterTrustBundle(s) aren't available?
+	Optional *bool
+
+	// Relative path from the volume root to write the bundle.
+	Path string
+}
+
 // ProjectedVolumeSource represents a projected volume source
 type ProjectedVolumeSource struct {
 	// list of volume projections
@@ -1784,6 +1807,8 @@ type VolumeProjection struct {
 	ConfigMap *ConfigMapProjection
 	// information about the serviceAccountToken data to project
 	ServiceAccountToken *ServiceAccountTokenProjection
+	// information about the ClusterTrustBundle data to project
+	ClusterTrustBundle *ClusterTrustBundleProjection
 }
 
 // KeyToPath maps a string key to a path within a volume.
@@ -2337,6 +2362,9 @@ type Capabilities struct {
 	Drop []Capability
 }
 
+// QOSResourceName is the name of a QoS resource.
+type QOSResourceName string
+
 // ResourceRequirements describes the compute resource requirements.
 type ResourceRequirements struct {
 	// Limits describes the maximum amount of compute resources allowed.
@@ -2358,6 +2386,10 @@ type ResourceRequirements struct {
 	// +featureGate=DynamicResourceAllocation
 	// +optional
 	Claims []ResourceClaim
+	// QOSResources specifies the requested QoS resources.
+	// +featureGate=QOSResources
+	// +optional
+	QOSResources []QOSResourceRequest
 }
 
 // VolumeResourceRequirements describes the storage resource requirements for a volume.
@@ -2378,6 +2410,14 @@ type ResourceClaim struct {
 	// the Pod where this field is used. It makes that resource available
 	// inside a container.
 	Name string
+}
+
+// QOSResourceRequest specifies a request for one QoS resource type.
+type QOSResourceRequest struct {
+	// Name of the QoS resource.
+	Name QOSResourceName
+	// Name of the class (inside the QoS resource type specified by Name field).
+	Class string
 }
 
 // Container represents a single container that is expected to be run on the host.
@@ -2673,6 +2713,11 @@ type ContainerStatus struct {
 	// +featureGate=InPlacePodVerticalScaling
 	// +optional
 	Resources *ResourceRequirements
+
+	// QOSResources represents the QoS resources assigned for this container.
+	// +featureGate=QOSResources
+	// +optional
+	QOSResources []QOSResourceRequest
 }
 
 // PodPhase is a label for the condition of a pod at the current time.
@@ -3345,6 +3390,12 @@ type PodSpec struct {
 	// +featureGate=DynamicResourceAllocation
 	// +optional
 	ResourceClaims []PodResourceClaim
+	// QOSResources specifies the Pod-level requests of QoS resources.
+	// Container-level QoS resources may be specified in which case they
+	// are considered as a default for all containers within the Pod.
+	// +featureGate=QOSResources
+	// +optional
+	QOSResources []PodQOSResourceRequest
 }
 
 // PodResourceClaim references exactly one ResourceClaim through a ClaimSource.
@@ -3357,6 +3408,15 @@ type PodResourceClaim struct {
 
 	// Source describes where to find the ResourceClaim.
 	Source ClaimSource
+}
+
+// PodQOSResourceRequest specifies a request for one QoS resource type for a
+// Pod.
+type PodQOSResourceRequest struct {
+	// Name of the QoS resource.
+	Name QOSResourceName
+	// Name of the class (inside the QoS resource type specified by Name field).
+	Class string
 }
 
 // ClaimSource describes a reference to a ResourceClaim.
@@ -3854,6 +3914,11 @@ type PodStatus struct {
 	// +featureGate=DynamicResourceAllocation
 	// +optional
 	ResourceClaimStatuses []PodResourceClaimStatus
+
+	// QOSResources represents the pod-level QoS resources assigned for this Pod.
+	// +featureGate=QOSResources
+	// +optional
+	QOSResources []PodQOSResourceRequest
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
@@ -4767,6 +4832,37 @@ type NodeConfigStatus struct {
 	Error string
 }
 
+// QOSResourceClassInfo contains information about single class of one QoS
+// resource.
+type QOSResourceClassInfo struct {
+	// Name of the class.
+	Name string
+	// Capacity is the number of maximum allowed simultaneous assignments into this class.
+	// Zero means "infinite" capacity i.e. the usage is not restricted.
+	// +optional
+	Capacity int64
+}
+
+// QOSResourceInfo contains information about one QoS resource type.
+type QOSResourceInfo struct {
+	// Name of the resource.
+	Name QOSResourceName
+	// Mutable is set to true if the resource supports in-place updates.
+	Mutable bool
+	// Classes available for assignment.
+	Classes []QOSResourceClassInfo
+}
+
+// QOSResourceStatus describes QoS resources available on the node.
+type QOSResourceStatus struct {
+	// PodQOSResources contains the QoS resources that are available for pods
+	// to be assigned to.
+	PodQOSResources []QOSResourceInfo
+	// ContainerQOSResources contains the QoS resources that are available for
+	// containers to be assigned to.
+	ContainerQOSResources []QOSResourceInfo
+}
+
 // NodeStatus is information about the current status of a node.
 type NodeStatus struct {
 	// Capacity represents the total resources of a node.
@@ -4802,6 +4898,11 @@ type NodeStatus struct {
 	// Status of the config assigned to the node via the dynamic Kubelet config feature.
 	// +optional
 	Config *NodeConfigStatus
+	// QOSResources contains information about the QoS resources that are
+	// available on the node.
+	// +featureGate=QOSResources
+	// +optional
+	QOSResources QOSResourceStatus
 }
 
 // UniqueVolumeName defines the name of attached volume
@@ -4978,7 +5079,6 @@ const (
 	// Volume size, in bytes (e,g. 5Gi = 5GiB = 5 * 1024 * 1024 * 1024)
 	ResourceStorage ResourceName = "storage"
 	// Local ephemeral storage, in bytes. (500Gi = 500GiB = 500 * 1024 * 1024 * 1024)
-	// The resource name for ResourceEphemeralStorage is alpha and it can change across releases.
 	ResourceEphemeralStorage ResourceName = "ephemeral-storage"
 )
 

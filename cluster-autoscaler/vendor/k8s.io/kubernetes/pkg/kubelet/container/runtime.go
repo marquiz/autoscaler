@@ -160,6 +160,8 @@ type ImageService interface {
 	RemoveImage(ctx context.Context, image ImageSpec) error
 	// ImageStats returns Image statistics.
 	ImageStats(ctx context.Context) (*ImageStats, error)
+	// ImageFsInfo returns a list of file systems for containers/images
+	ImageFsInfo(ctx context.Context) (*runtimeapi.ImageFsInfoResponse, error)
 }
 
 // Attacher interface allows to attach a container.
@@ -522,6 +524,10 @@ const (
 type RuntimeStatus struct {
 	// Conditions is an array of current observed runtime conditions.
 	Conditions []RuntimeCondition
+	// PodQOSResources holds information about the pod-level QoS resources of the node
+	PodQOSResources []v1.QOSResourceInfo
+	// ContainerQOSResources holds information about the container-level QoS resources of the node
+	ContainerQOSResources []v1.QOSResourceInfo
 }
 
 // GetRuntimeCondition gets a specified runtime condition from the runtime status.

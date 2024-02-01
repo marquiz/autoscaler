@@ -212,6 +212,16 @@ func RegisterConversions(s *runtime.Scheme) error {
 	}); err != nil {
 		return err
 	}
+	if err := s.AddGeneratedConversionFunc((*v1.ClusterTrustBundleProjection)(nil), (*core.ClusterTrustBundleProjection)(nil), func(a, b interface{}, scope conversion.Scope) error {
+		return Convert_v1_ClusterTrustBundleProjection_To_core_ClusterTrustBundleProjection(a.(*v1.ClusterTrustBundleProjection), b.(*core.ClusterTrustBundleProjection), scope)
+	}); err != nil {
+		return err
+	}
+	if err := s.AddGeneratedConversionFunc((*core.ClusterTrustBundleProjection)(nil), (*v1.ClusterTrustBundleProjection)(nil), func(a, b interface{}, scope conversion.Scope) error {
+		return Convert_core_ClusterTrustBundleProjection_To_v1_ClusterTrustBundleProjection(a.(*core.ClusterTrustBundleProjection), b.(*v1.ClusterTrustBundleProjection), scope)
+	}); err != nil {
+		return err
+	}
 	if err := s.AddGeneratedConversionFunc((*v1.ComponentCondition)(nil), (*core.ComponentCondition)(nil), func(a, b interface{}, scope conversion.Scope) error {
 		return Convert_v1_ComponentCondition_To_core_ComponentCondition(a.(*v1.ComponentCondition), b.(*core.ComponentCondition), scope)
 	}); err != nil {
@@ -1382,6 +1392,16 @@ func RegisterConversions(s *runtime.Scheme) error {
 	}); err != nil {
 		return err
 	}
+	if err := s.AddGeneratedConversionFunc((*v1.PodQOSResourceRequest)(nil), (*core.PodQOSResourceRequest)(nil), func(a, b interface{}, scope conversion.Scope) error {
+		return Convert_v1_PodQOSResourceRequest_To_core_PodQOSResourceRequest(a.(*v1.PodQOSResourceRequest), b.(*core.PodQOSResourceRequest), scope)
+	}); err != nil {
+		return err
+	}
+	if err := s.AddGeneratedConversionFunc((*core.PodQOSResourceRequest)(nil), (*v1.PodQOSResourceRequest)(nil), func(a, b interface{}, scope conversion.Scope) error {
+		return Convert_core_PodQOSResourceRequest_To_v1_PodQOSResourceRequest(a.(*core.PodQOSResourceRequest), b.(*v1.PodQOSResourceRequest), scope)
+	}); err != nil {
+		return err
+	}
 	if err := s.AddGeneratedConversionFunc((*v1.PodReadinessGate)(nil), (*core.PodReadinessGate)(nil), func(a, b interface{}, scope conversion.Scope) error {
 		return Convert_v1_PodReadinessGate_To_core_PodReadinessGate(a.(*v1.PodReadinessGate), b.(*core.PodReadinessGate), scope)
 	}); err != nil {
@@ -1549,6 +1569,46 @@ func RegisterConversions(s *runtime.Scheme) error {
 	}
 	if err := s.AddGeneratedConversionFunc((*core.ProjectedVolumeSource)(nil), (*v1.ProjectedVolumeSource)(nil), func(a, b interface{}, scope conversion.Scope) error {
 		return Convert_core_ProjectedVolumeSource_To_v1_ProjectedVolumeSource(a.(*core.ProjectedVolumeSource), b.(*v1.ProjectedVolumeSource), scope)
+	}); err != nil {
+		return err
+	}
+	if err := s.AddGeneratedConversionFunc((*v1.QOSResourceClassInfo)(nil), (*core.QOSResourceClassInfo)(nil), func(a, b interface{}, scope conversion.Scope) error {
+		return Convert_v1_QOSResourceClassInfo_To_core_QOSResourceClassInfo(a.(*v1.QOSResourceClassInfo), b.(*core.QOSResourceClassInfo), scope)
+	}); err != nil {
+		return err
+	}
+	if err := s.AddGeneratedConversionFunc((*core.QOSResourceClassInfo)(nil), (*v1.QOSResourceClassInfo)(nil), func(a, b interface{}, scope conversion.Scope) error {
+		return Convert_core_QOSResourceClassInfo_To_v1_QOSResourceClassInfo(a.(*core.QOSResourceClassInfo), b.(*v1.QOSResourceClassInfo), scope)
+	}); err != nil {
+		return err
+	}
+	if err := s.AddGeneratedConversionFunc((*v1.QOSResourceInfo)(nil), (*core.QOSResourceInfo)(nil), func(a, b interface{}, scope conversion.Scope) error {
+		return Convert_v1_QOSResourceInfo_To_core_QOSResourceInfo(a.(*v1.QOSResourceInfo), b.(*core.QOSResourceInfo), scope)
+	}); err != nil {
+		return err
+	}
+	if err := s.AddGeneratedConversionFunc((*core.QOSResourceInfo)(nil), (*v1.QOSResourceInfo)(nil), func(a, b interface{}, scope conversion.Scope) error {
+		return Convert_core_QOSResourceInfo_To_v1_QOSResourceInfo(a.(*core.QOSResourceInfo), b.(*v1.QOSResourceInfo), scope)
+	}); err != nil {
+		return err
+	}
+	if err := s.AddGeneratedConversionFunc((*v1.QOSResourceRequest)(nil), (*core.QOSResourceRequest)(nil), func(a, b interface{}, scope conversion.Scope) error {
+		return Convert_v1_QOSResourceRequest_To_core_QOSResourceRequest(a.(*v1.QOSResourceRequest), b.(*core.QOSResourceRequest), scope)
+	}); err != nil {
+		return err
+	}
+	if err := s.AddGeneratedConversionFunc((*core.QOSResourceRequest)(nil), (*v1.QOSResourceRequest)(nil), func(a, b interface{}, scope conversion.Scope) error {
+		return Convert_core_QOSResourceRequest_To_v1_QOSResourceRequest(a.(*core.QOSResourceRequest), b.(*v1.QOSResourceRequest), scope)
+	}); err != nil {
+		return err
+	}
+	if err := s.AddGeneratedConversionFunc((*v1.QOSResourceStatus)(nil), (*core.QOSResourceStatus)(nil), func(a, b interface{}, scope conversion.Scope) error {
+		return Convert_v1_QOSResourceStatus_To_core_QOSResourceStatus(a.(*v1.QOSResourceStatus), b.(*core.QOSResourceStatus), scope)
+	}); err != nil {
+		return err
+	}
+	if err := s.AddGeneratedConversionFunc((*core.QOSResourceStatus)(nil), (*v1.QOSResourceStatus)(nil), func(a, b interface{}, scope conversion.Scope) error {
+		return Convert_core_QOSResourceStatus_To_v1_QOSResourceStatus(a.(*core.QOSResourceStatus), b.(*v1.QOSResourceStatus), scope)
 	}); err != nil {
 		return err
 	}
@@ -2765,6 +2825,34 @@ func Convert_core_ClientIPConfig_To_v1_ClientIPConfig(in *core.ClientIPConfig, o
 	return autoConvert_core_ClientIPConfig_To_v1_ClientIPConfig(in, out, s)
 }
 
+func autoConvert_v1_ClusterTrustBundleProjection_To_core_ClusterTrustBundleProjection(in *v1.ClusterTrustBundleProjection, out *core.ClusterTrustBundleProjection, s conversion.Scope) error {
+	out.Name = (*string)(unsafe.Pointer(in.Name))
+	out.SignerName = (*string)(unsafe.Pointer(in.SignerName))
+	out.LabelSelector = (*metav1.LabelSelector)(unsafe.Pointer(in.LabelSelector))
+	out.Optional = (*bool)(unsafe.Pointer(in.Optional))
+	out.Path = in.Path
+	return nil
+}
+
+// Convert_v1_ClusterTrustBundleProjection_To_core_ClusterTrustBundleProjection is an autogenerated conversion function.
+func Convert_v1_ClusterTrustBundleProjection_To_core_ClusterTrustBundleProjection(in *v1.ClusterTrustBundleProjection, out *core.ClusterTrustBundleProjection, s conversion.Scope) error {
+	return autoConvert_v1_ClusterTrustBundleProjection_To_core_ClusterTrustBundleProjection(in, out, s)
+}
+
+func autoConvert_core_ClusterTrustBundleProjection_To_v1_ClusterTrustBundleProjection(in *core.ClusterTrustBundleProjection, out *v1.ClusterTrustBundleProjection, s conversion.Scope) error {
+	out.Name = (*string)(unsafe.Pointer(in.Name))
+	out.SignerName = (*string)(unsafe.Pointer(in.SignerName))
+	out.LabelSelector = (*metav1.LabelSelector)(unsafe.Pointer(in.LabelSelector))
+	out.Optional = (*bool)(unsafe.Pointer(in.Optional))
+	out.Path = in.Path
+	return nil
+}
+
+// Convert_core_ClusterTrustBundleProjection_To_v1_ClusterTrustBundleProjection is an autogenerated conversion function.
+func Convert_core_ClusterTrustBundleProjection_To_v1_ClusterTrustBundleProjection(in *core.ClusterTrustBundleProjection, out *v1.ClusterTrustBundleProjection, s conversion.Scope) error {
+	return autoConvert_core_ClusterTrustBundleProjection_To_v1_ClusterTrustBundleProjection(in, out, s)
+}
+
 func autoConvert_v1_ComponentCondition_To_core_ComponentCondition(in *v1.ComponentCondition, out *core.ComponentCondition, s conversion.Scope) error {
 	out.Type = core.ComponentConditionType(in.Type)
 	out.Status = core.ConditionStatus(in.Status)
@@ -3279,6 +3367,7 @@ func autoConvert_v1_ContainerStatus_To_core_ContainerStatus(in *v1.ContainerStat
 	out.Started = (*bool)(unsafe.Pointer(in.Started))
 	out.AllocatedResources = *(*core.ResourceList)(unsafe.Pointer(&in.AllocatedResources))
 	out.Resources = (*core.ResourceRequirements)(unsafe.Pointer(in.Resources))
+	out.QOSResources = *(*[]core.QOSResourceRequest)(unsafe.Pointer(&in.QOSResources))
 	return nil
 }
 
@@ -3303,6 +3392,7 @@ func autoConvert_core_ContainerStatus_To_v1_ContainerStatus(in *core.ContainerSt
 	out.Started = (*bool)(unsafe.Pointer(in.Started))
 	out.AllocatedResources = *(*v1.ResourceList)(unsafe.Pointer(&in.AllocatedResources))
 	out.Resources = (*v1.ResourceRequirements)(unsafe.Pointer(in.Resources))
+	out.QOSResources = *(*[]v1.QOSResourceRequest)(unsafe.Pointer(&in.QOSResources))
 	return nil
 }
 
@@ -5134,6 +5224,9 @@ func autoConvert_v1_NodeStatus_To_core_NodeStatus(in *v1.NodeStatus, out *core.N
 	out.VolumesInUse = *(*[]core.UniqueVolumeName)(unsafe.Pointer(&in.VolumesInUse))
 	out.VolumesAttached = *(*[]core.AttachedVolume)(unsafe.Pointer(&in.VolumesAttached))
 	out.Config = (*core.NodeConfigStatus)(unsafe.Pointer(in.Config))
+	if err := Convert_v1_QOSResourceStatus_To_core_QOSResourceStatus(&in.QOSResources, &out.QOSResources, s); err != nil {
+		return err
+	}
 	return nil
 }
 
@@ -5158,6 +5251,9 @@ func autoConvert_core_NodeStatus_To_v1_NodeStatus(in *core.NodeStatus, out *v1.N
 	out.VolumesInUse = *(*[]v1.UniqueVolumeName)(unsafe.Pointer(&in.VolumesInUse))
 	out.VolumesAttached = *(*[]v1.AttachedVolume)(unsafe.Pointer(&in.VolumesAttached))
 	out.Config = (*v1.NodeConfigStatus)(unsafe.Pointer(in.Config))
+	if err := Convert_core_QOSResourceStatus_To_v1_QOSResourceStatus(&in.QOSResources, &out.QOSResources, s); err != nil {
+		return err
+	}
 	return nil
 }
 
@@ -6275,6 +6371,28 @@ func Convert_url_Values_To_v1_PodProxyOptions(in *url.Values, out *v1.PodProxyOp
 	return autoConvert_url_Values_To_v1_PodProxyOptions(in, out, s)
 }
 
+func autoConvert_v1_PodQOSResourceRequest_To_core_PodQOSResourceRequest(in *v1.PodQOSResourceRequest, out *core.PodQOSResourceRequest, s conversion.Scope) error {
+	out.Name = core.QOSResourceName(in.Name)
+	out.Class = in.Class
+	return nil
+}
+
+// Convert_v1_PodQOSResourceRequest_To_core_PodQOSResourceRequest is an autogenerated conversion function.
+func Convert_v1_PodQOSResourceRequest_To_core_PodQOSResourceRequest(in *v1.PodQOSResourceRequest, out *core.PodQOSResourceRequest, s conversion.Scope) error {
+	return autoConvert_v1_PodQOSResourceRequest_To_core_PodQOSResourceRequest(in, out, s)
+}
+
+func autoConvert_core_PodQOSResourceRequest_To_v1_PodQOSResourceRequest(in *core.PodQOSResourceRequest, out *v1.PodQOSResourceRequest, s conversion.Scope) error {
+	out.Name = v1.QOSResourceName(in.Name)
+	out.Class = in.Class
+	return nil
+}
+
+// Convert_core_PodQOSResourceRequest_To_v1_PodQOSResourceRequest is an autogenerated conversion function.
+func Convert_core_PodQOSResourceRequest_To_v1_PodQOSResourceRequest(in *core.PodQOSResourceRequest, out *v1.PodQOSResourceRequest, s conversion.Scope) error {
+	return autoConvert_core_PodQOSResourceRequest_To_v1_PodQOSResourceRequest(in, out, s)
+}
+
 func autoConvert_v1_PodReadinessGate_To_core_PodReadinessGate(in *v1.PodReadinessGate, out *core.PodReadinessGate, s conversion.Scope) error {
 	out.ConditionType = core.PodConditionType(in.ConditionType)
 	return nil
@@ -6484,6 +6602,7 @@ func autoConvert_v1_PodSpec_To_core_PodSpec(in *v1.PodSpec, out *core.PodSpec, s
 	// INFO: in.HostUsers opted out of conversion generation
 	out.SchedulingGates = *(*[]core.PodSchedulingGate)(unsafe.Pointer(&in.SchedulingGates))
 	out.ResourceClaims = *(*[]core.PodResourceClaim)(unsafe.Pointer(&in.ResourceClaims))
+	out.QOSResources = *(*[]core.PodQOSResourceRequest)(unsafe.Pointer(&in.QOSResources))
 	return nil
 }
 
@@ -6539,6 +6658,7 @@ func autoConvert_core_PodSpec_To_v1_PodSpec(in *core.PodSpec, out *v1.PodSpec, s
 	out.OS = (*v1.PodOS)(unsafe.Pointer(in.OS))
 	out.SchedulingGates = *(*[]v1.PodSchedulingGate)(unsafe.Pointer(&in.SchedulingGates))
 	out.ResourceClaims = *(*[]v1.PodResourceClaim)(unsafe.Pointer(&in.ResourceClaims))
+	out.QOSResources = *(*[]v1.PodQOSResourceRequest)(unsafe.Pointer(&in.QOSResources))
 	return nil
 }
 
@@ -6559,6 +6679,7 @@ func autoConvert_v1_PodStatus_To_core_PodStatus(in *v1.PodStatus, out *core.PodS
 	out.EphemeralContainerStatuses = *(*[]core.ContainerStatus)(unsafe.Pointer(&in.EphemeralContainerStatuses))
 	out.Resize = core.PodResizeStatus(in.Resize)
 	out.ResourceClaimStatuses = *(*[]core.PodResourceClaimStatus)(unsafe.Pointer(&in.ResourceClaimStatuses))
+	out.QOSResources = *(*[]core.PodQOSResourceRequest)(unsafe.Pointer(&in.QOSResources))
 	return nil
 }
 
@@ -6578,6 +6699,7 @@ func autoConvert_core_PodStatus_To_v1_PodStatus(in *core.PodStatus, out *v1.PodS
 	out.EphemeralContainerStatuses = *(*[]v1.ContainerStatus)(unsafe.Pointer(&in.EphemeralContainerStatuses))
 	out.Resize = v1.PodResizeStatus(in.Resize)
 	out.ResourceClaimStatuses = *(*[]v1.PodResourceClaimStatus)(unsafe.Pointer(&in.ResourceClaimStatuses))
+	out.QOSResources = *(*[]v1.PodQOSResourceRequest)(unsafe.Pointer(&in.QOSResources))
 	return nil
 }
 
@@ -6917,6 +7039,96 @@ func autoConvert_core_ProjectedVolumeSource_To_v1_ProjectedVolumeSource(in *core
 // Convert_core_ProjectedVolumeSource_To_v1_ProjectedVolumeSource is an autogenerated conversion function.
 func Convert_core_ProjectedVolumeSource_To_v1_ProjectedVolumeSource(in *core.ProjectedVolumeSource, out *v1.ProjectedVolumeSource, s conversion.Scope) error {
 	return autoConvert_core_ProjectedVolumeSource_To_v1_ProjectedVolumeSource(in, out, s)
+}
+
+func autoConvert_v1_QOSResourceClassInfo_To_core_QOSResourceClassInfo(in *v1.QOSResourceClassInfo, out *core.QOSResourceClassInfo, s conversion.Scope) error {
+	out.Name = in.Name
+	out.Capacity = in.Capacity
+	return nil
+}
+
+// Convert_v1_QOSResourceClassInfo_To_core_QOSResourceClassInfo is an autogenerated conversion function.
+func Convert_v1_QOSResourceClassInfo_To_core_QOSResourceClassInfo(in *v1.QOSResourceClassInfo, out *core.QOSResourceClassInfo, s conversion.Scope) error {
+	return autoConvert_v1_QOSResourceClassInfo_To_core_QOSResourceClassInfo(in, out, s)
+}
+
+func autoConvert_core_QOSResourceClassInfo_To_v1_QOSResourceClassInfo(in *core.QOSResourceClassInfo, out *v1.QOSResourceClassInfo, s conversion.Scope) error {
+	out.Name = in.Name
+	out.Capacity = in.Capacity
+	return nil
+}
+
+// Convert_core_QOSResourceClassInfo_To_v1_QOSResourceClassInfo is an autogenerated conversion function.
+func Convert_core_QOSResourceClassInfo_To_v1_QOSResourceClassInfo(in *core.QOSResourceClassInfo, out *v1.QOSResourceClassInfo, s conversion.Scope) error {
+	return autoConvert_core_QOSResourceClassInfo_To_v1_QOSResourceClassInfo(in, out, s)
+}
+
+func autoConvert_v1_QOSResourceInfo_To_core_QOSResourceInfo(in *v1.QOSResourceInfo, out *core.QOSResourceInfo, s conversion.Scope) error {
+	out.Name = core.QOSResourceName(in.Name)
+	out.Mutable = in.Mutable
+	out.Classes = *(*[]core.QOSResourceClassInfo)(unsafe.Pointer(&in.Classes))
+	return nil
+}
+
+// Convert_v1_QOSResourceInfo_To_core_QOSResourceInfo is an autogenerated conversion function.
+func Convert_v1_QOSResourceInfo_To_core_QOSResourceInfo(in *v1.QOSResourceInfo, out *core.QOSResourceInfo, s conversion.Scope) error {
+	return autoConvert_v1_QOSResourceInfo_To_core_QOSResourceInfo(in, out, s)
+}
+
+func autoConvert_core_QOSResourceInfo_To_v1_QOSResourceInfo(in *core.QOSResourceInfo, out *v1.QOSResourceInfo, s conversion.Scope) error {
+	out.Name = v1.QOSResourceName(in.Name)
+	out.Mutable = in.Mutable
+	out.Classes = *(*[]v1.QOSResourceClassInfo)(unsafe.Pointer(&in.Classes))
+	return nil
+}
+
+// Convert_core_QOSResourceInfo_To_v1_QOSResourceInfo is an autogenerated conversion function.
+func Convert_core_QOSResourceInfo_To_v1_QOSResourceInfo(in *core.QOSResourceInfo, out *v1.QOSResourceInfo, s conversion.Scope) error {
+	return autoConvert_core_QOSResourceInfo_To_v1_QOSResourceInfo(in, out, s)
+}
+
+func autoConvert_v1_QOSResourceRequest_To_core_QOSResourceRequest(in *v1.QOSResourceRequest, out *core.QOSResourceRequest, s conversion.Scope) error {
+	out.Name = core.QOSResourceName(in.Name)
+	out.Class = in.Class
+	return nil
+}
+
+// Convert_v1_QOSResourceRequest_To_core_QOSResourceRequest is an autogenerated conversion function.
+func Convert_v1_QOSResourceRequest_To_core_QOSResourceRequest(in *v1.QOSResourceRequest, out *core.QOSResourceRequest, s conversion.Scope) error {
+	return autoConvert_v1_QOSResourceRequest_To_core_QOSResourceRequest(in, out, s)
+}
+
+func autoConvert_core_QOSResourceRequest_To_v1_QOSResourceRequest(in *core.QOSResourceRequest, out *v1.QOSResourceRequest, s conversion.Scope) error {
+	out.Name = v1.QOSResourceName(in.Name)
+	out.Class = in.Class
+	return nil
+}
+
+// Convert_core_QOSResourceRequest_To_v1_QOSResourceRequest is an autogenerated conversion function.
+func Convert_core_QOSResourceRequest_To_v1_QOSResourceRequest(in *core.QOSResourceRequest, out *v1.QOSResourceRequest, s conversion.Scope) error {
+	return autoConvert_core_QOSResourceRequest_To_v1_QOSResourceRequest(in, out, s)
+}
+
+func autoConvert_v1_QOSResourceStatus_To_core_QOSResourceStatus(in *v1.QOSResourceStatus, out *core.QOSResourceStatus, s conversion.Scope) error {
+	out.PodQOSResources = *(*[]core.QOSResourceInfo)(unsafe.Pointer(&in.PodQOSResources))
+	out.ContainerQOSResources = *(*[]core.QOSResourceInfo)(unsafe.Pointer(&in.ContainerQOSResources))
+	return nil
+}
+
+// Convert_v1_QOSResourceStatus_To_core_QOSResourceStatus is an autogenerated conversion function.
+func Convert_v1_QOSResourceStatus_To_core_QOSResourceStatus(in *v1.QOSResourceStatus, out *core.QOSResourceStatus, s conversion.Scope) error {
+	return autoConvert_v1_QOSResourceStatus_To_core_QOSResourceStatus(in, out, s)
+}
+
+func autoConvert_core_QOSResourceStatus_To_v1_QOSResourceStatus(in *core.QOSResourceStatus, out *v1.QOSResourceStatus, s conversion.Scope) error {
+	out.PodQOSResources = *(*[]v1.QOSResourceInfo)(unsafe.Pointer(&in.PodQOSResources))
+	out.ContainerQOSResources = *(*[]v1.QOSResourceInfo)(unsafe.Pointer(&in.ContainerQOSResources))
+	return nil
+}
+
+// Convert_core_QOSResourceStatus_To_v1_QOSResourceStatus is an autogenerated conversion function.
+func Convert_core_QOSResourceStatus_To_v1_QOSResourceStatus(in *core.QOSResourceStatus, out *v1.QOSResourceStatus, s conversion.Scope) error {
+	return autoConvert_core_QOSResourceStatus_To_v1_QOSResourceStatus(in, out, s)
 }
 
 func autoConvert_v1_QuobyteVolumeSource_To_core_QuobyteVolumeSource(in *v1.QuobyteVolumeSource, out *core.QuobyteVolumeSource, s conversion.Scope) error {
@@ -7357,6 +7569,7 @@ func autoConvert_v1_ResourceRequirements_To_core_ResourceRequirements(in *v1.Res
 	out.Limits = *(*core.ResourceList)(unsafe.Pointer(&in.Limits))
 	out.Requests = *(*core.ResourceList)(unsafe.Pointer(&in.Requests))
 	out.Claims = *(*[]core.ResourceClaim)(unsafe.Pointer(&in.Claims))
+	out.QOSResources = *(*[]core.QOSResourceRequest)(unsafe.Pointer(&in.QOSResources))
 	return nil
 }
 
@@ -7369,6 +7582,7 @@ func autoConvert_core_ResourceRequirements_To_v1_ResourceRequirements(in *core.R
 	out.Limits = *(*v1.ResourceList)(unsafe.Pointer(&in.Limits))
 	out.Requests = *(*v1.ResourceList)(unsafe.Pointer(&in.Requests))
 	out.Claims = *(*[]v1.ResourceClaim)(unsafe.Pointer(&in.Claims))
+	out.QOSResources = *(*[]v1.QOSResourceRequest)(unsafe.Pointer(&in.QOSResources))
 	return nil
 }
 
@@ -8524,6 +8738,7 @@ func autoConvert_v1_VolumeProjection_To_core_VolumeProjection(in *v1.VolumeProje
 	} else {
 		out.ServiceAccountToken = nil
 	}
+	out.ClusterTrustBundle = (*core.ClusterTrustBundleProjection)(unsafe.Pointer(in.ClusterTrustBundle))
 	return nil
 }
 
@@ -8545,6 +8760,7 @@ func autoConvert_core_VolumeProjection_To_v1_VolumeProjection(in *core.VolumePro
 	} else {
 		out.ServiceAccountToken = nil
 	}
+	out.ClusterTrustBundle = (*v1.ClusterTrustBundleProjection)(unsafe.Pointer(in.ClusterTrustBundle))
 	return nil
 }
 

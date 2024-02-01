@@ -228,6 +228,19 @@ func (ClientIPConfig) SwaggerDoc() map[string]string {
 	return map_ClientIPConfig
 }
 
+var map_ClusterTrustBundleProjection = map[string]string{
+	"":              "ClusterTrustBundleProjection describes how to select a set of ClusterTrustBundle objects and project their contents into the pod filesystem.",
+	"name":          "Select a single ClusterTrustBundle by object name.  Mutually-exclusive with signerName and labelSelector.",
+	"signerName":    "Select all ClusterTrustBundles that match this signer name. Mutually-exclusive with name.  The contents of all selected ClusterTrustBundles will be unified and deduplicated.",
+	"labelSelector": "Select all ClusterTrustBundles that match this label selector.  Only has effect if signerName is set.  Mutually-exclusive with name.  If unset, interpreted as \"match nothing\".  If set but empty, interpreted as \"match everything\".",
+	"optional":      "If true, don't block pod startup if the referenced ClusterTrustBundle(s) aren't available.  If using name, then the named ClusterTrustBundle is allowed not to exist.  If using signerName, then the combination of signerName and labelSelector is allowed to match zero ClusterTrustBundles.",
+	"path":          "Relative path from the volume root to write the bundle.",
+}
+
+func (ClusterTrustBundleProjection) SwaggerDoc() map[string]string {
+	return map_ClusterTrustBundleProjection
+}
+
 var map_ComponentCondition = map[string]string{
 	"":        "Information about the condition of a component.",
 	"type":    "Type of condition for a component. Valid value: \"Healthy\"",
@@ -458,6 +471,7 @@ var map_ContainerStatus = map[string]string{
 	"started":            "Started indicates whether the container has finished its postStart lifecycle hook and passed its startup probe. Initialized as false, becomes true after startupProbe is considered successful. Resets to false when the container is restarted, or if kubelet loses state temporarily. In both cases, startup probes will run again. Is always true when no startupProbe is defined and container is running and has passed the postStart lifecycle hook. The null value must be treated the same as false.",
 	"allocatedResources": "AllocatedResources represents the compute resources allocated for this container by the node. Kubelet sets this value to Container.Resources.Requests upon successful pod admission and after successfully admitting desired pod resize.",
 	"resources":          "Resources represents the compute resource requests and limits that have been successfully enacted on the running container after it has been started or has been successfully resized.",
+	"qosResources":       "QOSResources represents the QoS resources assigned for this container.",
 }
 
 func (ContainerStatus) SwaggerDoc() map[string]string {
@@ -1257,6 +1271,7 @@ var map_NodeStatus = map[string]string{
 	"volumesInUse":    "List of attachable volumes in use (mounted) by the node.",
 	"volumesAttached": "List of volumes that are attached to the node.",
 	"config":          "Status of the config assigned to the node via the dynamic Kubelet config feature.",
+	"qosResources":    "QOSResources contains information about the QoS resources that are available on the node.",
 }
 
 func (NodeStatus) SwaggerDoc() map[string]string {
@@ -1332,7 +1347,7 @@ var map_PersistentVolumeClaimCondition = map[string]string{
 	"":                   "PersistentVolumeClaimCondition contains details about state of pvc",
 	"lastProbeTime":      "lastProbeTime is the time we probed the condition.",
 	"lastTransitionTime": "lastTransitionTime is the time the condition transitioned from one status to another.",
-	"reason":             "reason is a unique, this should be a short, machine understandable string that gives the reason for condition's last transition. If it reports \"ResizeStarted\" that means the underlying persistent volume is being resized.",
+	"reason":             "reason is a unique, this should be a short, machine understandable string that gives the reason for condition's last transition. If it reports \"Resizing\" that means the underlying persistent volume is being resized.",
 	"message":            "message is the human-readable message indicating details about last transition.",
 }
 
@@ -1372,7 +1387,7 @@ var map_PersistentVolumeClaimStatus = map[string]string{
 	"phase":                            "phase represents the current phase of PersistentVolumeClaim.",
 	"accessModes":                      "accessModes contains the actual access modes the volume backing the PVC has. More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#access-modes-1",
 	"capacity":                         "capacity represents the actual resources of the underlying volume.",
-	"conditions":                       "conditions is the current Condition of persistent volume claim. If underlying persistent volume is being resized then the Condition will be set to 'ResizeStarted'.",
+	"conditions":                       "conditions is the current Condition of persistent volume claim. If underlying persistent volume is being resized then the Condition will be set to 'Resizing'.",
 	"allocatedResources":               "allocatedResources tracks the resources allocated to a PVC including its capacity. Key names follow standard Kubernetes label syntax. Valid values are either:\n\t* Un-prefixed keys:\n\t\t- storage - the capacity of the volume.\n\t* Custom resources must use implementation-defined prefixed names such as \"example.com/my-custom-resource\"\nApart from above values - keys that are unprefixed or have kubernetes.io prefix are considered reserved and hence may not be used.\n\nCapacity reported here may be larger than the actual capacity when a volume expansion operation is requested. For storage quota, the larger value from allocatedResources and PVC.spec.resources is used. If allocatedResources is not set, PVC.spec.resources alone is used for quota calculation. If a volume expansion capacity request is lowered, allocatedResources is only lowered if there are no expansion operations in progress and if the actual volume capacity is equal or lower than the requested capacity.\n\nA controller that receives PVC update with previously unknown resourceName should ignore the update for the purpose it was designed. For example - a controller that only is responsible for resizing capacity of the volume, should ignore PVC updates that change other valid resources associated with PVC.\n\nThis is an alpha field and requires enabling RecoverVolumeExpansionFailure feature.",
 	"allocatedResourceStatuses":        "allocatedResourceStatuses stores status of resource being resized for the given PVC. Key names follow standard Kubernetes label syntax. Valid values are either:\n\t* Un-prefixed keys:\n\t\t- storage - the capacity of the volume.\n\t* Custom resources must use implementation-defined prefixed names such as \"example.com/my-custom-resource\"\nApart from above values - keys that are unprefixed or have kubernetes.io prefix are considered reserved and hence may not be used.\n\nClaimResourceStatus can be in any of following states:\n\t- ControllerResizeInProgress:\n\t\tState set when resize controller starts resizing the volume in control-plane.\n\t- ControllerResizeFailed:\n\t\tState set when resize has failed in resize controller with a terminal error.\n\t- NodeResizePending:\n\t\tState set when resize controller has finished resizing the volume but further resizing of\n\t\tvolume is needed on the node.\n\t- NodeResizeInProgress:\n\t\tState set when kubelet starts resizing the volume.\n\t- NodeResizeFailed:\n\t\tState set when resizing has failed in kubelet with a terminal error. Transient errors don't set\n\t\tNodeResizeFailed.\nFor example: if expanding a PVC for more capacity - this field can be one of the following states:\n\t- pvc.status.allocatedResourceStatus['storage'] = \"ControllerResizeInProgress\"\n     - pvc.status.allocatedResourceStatus['storage'] = \"ControllerResizeFailed\"\n     - pvc.status.allocatedResourceStatus['storage'] = \"NodeResizePending\"\n     - pvc.status.allocatedResourceStatus['storage'] = \"NodeResizeInProgress\"\n     - pvc.status.allocatedResourceStatus['storage'] = \"NodeResizeFailed\"\nWhen this field is not set, it means that no resize operation is in progress for the given PVC.\n\nA controller that receives PVC update with previously unknown resourceName or ClaimResourceStatus should ignore the update for the purpose it was designed. For example - a controller that only is responsible for resizing capacity of the volume, should ignore PVC updates that change other valid resources associated with PVC.\n\nThis is an alpha field and requires enabling RecoverVolumeExpansionFailure feature.",
 	"currentVolumeAttributesClassName": "currentVolumeAttributesClassName is the current name of the VolumeAttributesClass the PVC is using. When unset, there is no VolumeAttributeClass applied to this PersistentVolumeClaim This is an alpha field and requires enabling VolumeAttributesClass feature.",
@@ -1651,6 +1666,16 @@ func (PodProxyOptions) SwaggerDoc() map[string]string {
 	return map_PodProxyOptions
 }
 
+var map_PodQOSResourceRequest = map[string]string{
+	"":      "PodQOSResourceRequest specifies a request for one QoS resource type for a Pod.",
+	"name":  "Name of the QoS resource.",
+	"class": "Name of the class (inside the QoS resource type specified by Name field).",
+}
+
+func (PodQOSResourceRequest) SwaggerDoc() map[string]string {
+	return map_PodQOSResourceRequest
+}
+
 var map_PodReadinessGate = map[string]string{
 	"":              "PodReadinessGate contains the reference to a pod condition",
 	"conditionType": "ConditionType refers to a condition in the pod's condition list with matching type.",
@@ -1757,6 +1782,7 @@ var map_PodSpec = map[string]string{
 	"hostUsers":                     "Use the host's user namespace. Optional: Default to true. If set to true or not present, the pod will be run in the host user namespace, useful for when the pod needs a feature only available to the host user namespace, such as loading a kernel module with CAP_SYS_MODULE. When set to false, a new userns is created for the pod. Setting false is useful for mitigating container breakout vulnerabilities even allowing users to run their containers as root without actually having root privileges on the host. This field is alpha-level and is only honored by servers that enable the UserNamespacesSupport feature.",
 	"schedulingGates":               "SchedulingGates is an opaque list of values that if specified will block scheduling the pod. If schedulingGates is not empty, the pod will stay in the SchedulingGated state and the scheduler will not attempt to schedule the pod.\n\nSchedulingGates can only be set at pod creation time, and be removed only afterwards.\n\nThis is a beta feature enabled by the PodSchedulingReadiness feature gate.",
 	"resourceClaims":                "ResourceClaims defines which ResourceClaims must be allocated and reserved before the Pod is allowed to start. The resources will be made available to those containers which consume them by name.\n\nThis is an alpha field and requires enabling the DynamicResourceAllocation feature gate.\n\nThis field is immutable.",
+	"qosResources":                  "QOSResources specifies the Pod-level requests of QoS resources. Container-level QoS resources may be specified in which case they are considered as a default for all containers within the Pod.",
 }
 
 func (PodSpec) SwaggerDoc() map[string]string {
@@ -1781,6 +1807,7 @@ var map_PodStatus = map[string]string{
 	"ephemeralContainerStatuses": "Status for any ephemeral containers that have run in this pod.",
 	"resize":                     "Status of resources resize desired for pod's containers. It is empty if no resources resize is pending. Any changes to container resources will automatically set this to \"Proposed\"",
 	"resourceClaimStatuses":      "Status of resource claims.",
+	"qosResources":               "QOSResources represents the pod-level QoS resources assigned for this Pod.",
 }
 
 func (PodStatus) SwaggerDoc() map[string]string {
@@ -1913,6 +1940,47 @@ var map_ProjectedVolumeSource = map[string]string{
 
 func (ProjectedVolumeSource) SwaggerDoc() map[string]string {
 	return map_ProjectedVolumeSource
+}
+
+var map_QOSResourceClassInfo = map[string]string{
+	"":         "QOSResourceClassInfo contains information about single class of one QoS resource.",
+	"name":     "Name of the class.",
+	"capacity": "Capacity is the number of maximum allowed simultaneous assignments into this class. Zero means \"infinite\" capacity i.e. the usage is not restricted.",
+}
+
+func (QOSResourceClassInfo) SwaggerDoc() map[string]string {
+	return map_QOSResourceClassInfo
+}
+
+var map_QOSResourceInfo = map[string]string{
+	"":        "QOSResourceInfo contains information about one QoS resource type.",
+	"name":    "Name of the resource.",
+	"mutable": "Mutable is set to true if the resource supports in-place updates.",
+	"classes": "Classes available for assignment.",
+}
+
+func (QOSResourceInfo) SwaggerDoc() map[string]string {
+	return map_QOSResourceInfo
+}
+
+var map_QOSResourceRequest = map[string]string{
+	"":      "QOSResourceRequest specifies a request for one QoS resource type.",
+	"name":  "Name of the QoS resource.",
+	"class": "Name of the class (inside the QoS resource type specified by Name field).",
+}
+
+func (QOSResourceRequest) SwaggerDoc() map[string]string {
+	return map_QOSResourceRequest
+}
+
+var map_QOSResourceStatus = map[string]string{
+	"":                      "QOSResourceStatus describes QoS resources available on the node.",
+	"podQOSResources":       "PodQOSResources contains the QoS resources that are available for pods to be assigned to.",
+	"containerQOSResources": "ContainerQOSResources contains the QoS resources that are available for containers to be assigned to.",
+}
+
+func (QOSResourceStatus) SwaggerDoc() map[string]string {
+	return map_QOSResourceStatus
 }
 
 var map_QuobyteVolumeSource = map[string]string{
@@ -2095,10 +2163,11 @@ func (ResourceQuotaStatus) SwaggerDoc() map[string]string {
 }
 
 var map_ResourceRequirements = map[string]string{
-	"":         "ResourceRequirements describes the compute resource requirements.",
-	"limits":   "Limits describes the maximum amount of compute resources allowed. More info: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/",
-	"requests": "Requests describes the minimum amount of compute resources required. If Requests is omitted for a container, it defaults to Limits if that is explicitly specified, otherwise to an implementation-defined value. Requests cannot exceed Limits. More info: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/",
-	"claims":   "Claims lists the names of resources, defined in spec.resourceClaims, that are used by this container.\n\nThis is an alpha field and requires enabling the DynamicResourceAllocation feature gate.\n\nThis field is immutable. It can only be set for containers.",
+	"":             "ResourceRequirements describes the compute resource requirements.",
+	"limits":       "Limits describes the maximum amount of compute resources allowed. More info: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/",
+	"requests":     "Requests describes the minimum amount of compute resources required. If Requests is omitted for a container, it defaults to Limits if that is explicitly specified, otherwise to an implementation-defined value. Requests cannot exceed Limits. More info: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/",
+	"claims":       "Claims lists the names of resources, defined in spec.resourceClaims, that are used by this container.\n\nThis is an alpha field and requires enabling the DynamicResourceAllocation feature gate.\n\nThis field is immutable. It can only be set for containers.",
+	"qosResources": "QOSResources specifies the requested QoS resources.",
 }
 
 func (ResourceRequirements) SwaggerDoc() map[string]string {
@@ -2593,6 +2662,7 @@ var map_VolumeProjection = map[string]string{
 	"downwardAPI":         "downwardAPI information about the downwardAPI data to project",
 	"configMap":           "configMap information about the configMap data to project",
 	"serviceAccountToken": "serviceAccountToken is information about the serviceAccountToken data to project",
+	"clusterTrustBundle":  "ClusterTrustBundle allows a pod to access the `.spec.trustBundle` field of ClusterTrustBundle objects in an auto-updating file.\n\nAlpha, gated by the ClusterTrustBundleProjection feature gate.\n\nClusterTrustBundle objects can either be selected by name, or by the combination of signer name and a label selector.\n\nKubelet performs aggressive normalization of the PEM contents written into the pod filesystem.  Esoteric PEM features such as inter-block comments and block headers are stripped.  Certificates are deduplicated. The ordering of certificates within the file is arbitrary, and Kubelet may change the order over time.",
 }
 
 func (VolumeProjection) SwaggerDoc() map[string]string {

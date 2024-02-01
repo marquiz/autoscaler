@@ -139,6 +139,7 @@ type ScheduleResult struct {
 	SuggestedHost string
 	// The number of nodes the scheduler evaluated the pod against in the filtering
 	// phase and beyond.
+	// Note that it contains the number of nodes that filtered out by PreFilterResult.
 	EvaluatedNodes int
 	// The number of nodes out of the evaluated ones that fit the pod.
 	FeasibleNodes int
@@ -372,6 +373,13 @@ func buildQueueingHintMap(es []framework.EnqueueExtensions) internalqueue.Queuei
 	queueingHintMap := make(internalqueue.QueueingHintMap)
 	for _, e := range es {
 		events := e.EventsToRegister()
+
+		// This will happen when plugin registers with empty events, it's usually the case a pod
+		// will become reschedulable only for self-update, e.g. schedulingGates plugin, the pod
+		// will enter into the activeQ via priorityQueue.Update().
+		if len(events) == 0 {
+			continue
+		}
 
 		// Note: Rarely, a plugin implements EnqueueExtensions but returns nil.
 		// We treat it as: the plugin is not interested in any event, and hence pod failed by that plugin
