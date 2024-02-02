@@ -128,6 +128,8 @@ func (o *ScaleUpOrchestrator) ScaleUp(
 
 	// Filter out invalid node groups
 	validNodeGroups, skippedNodeGroups := o.filterValidScaleUpNodeGroups(nodeGroups, nodeInfos, resourcesLeft, len(nodes)+len(upcomingNodes), now)
+	klog.Infof("VALID NODE GROUPS: %v", validNodeGroups)
+	klog.Infof("SKIPPED NODE GROUPS: %v", skippedNodeGroups)
 
 	// Mark skipped node groups as processed.
 	for nodegroupID := range skippedNodeGroups {
